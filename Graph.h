@@ -3,6 +3,8 @@
 #include<vector>
 #include<iterator>
 using namespace std;
+#ifndef FLIGHT_H
+#define FLIGHT_H
 
 class Edge{
     public:
@@ -246,7 +248,7 @@ class Graph {
     }
   }
 };
-int main() {
+/*int main() {
   Graph g;
   string sname;
   int id1, id2, w;
@@ -352,4 +354,5 @@ int main() {
     cout << endl;
   } while (option != 0);
   return 0;
-}
+}*/
+#endif
