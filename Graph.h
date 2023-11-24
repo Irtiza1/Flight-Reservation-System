@@ -142,13 +142,9 @@ class Graph {
         for (int i = 0; i < vertices.size(); i++) {
           if (vertices.at(i).getStateID() == fromVertex) {
             Edge e(toVertex, weight);
-            //edgelist.push_back(e); 
-            //vertices.at(i).addEdgeToedgelist(toVertex,weight);
             vertices.at(i).edgelist.push_back(e);
           } else if (vertices.at(i).getStateID() == toVertex) {
             Edge e(toVertex, weight);
-            //edgelist.push_back(e); 
-            //vertices.at(i).addEdgeToedgelist(fromVertex,weight);
             vertices.at(i).edgelist.push_back(e);
           }
         }
@@ -191,7 +187,6 @@ class Graph {
           for (auto it = vertices.at(i).edgelist.begin(); it != vertices.at(i).edgelist.end(); it++) {
             if (it -> getDestinationVertexID() == toVertex) {
               vertices.at(i).edgelist.erase(it);
-              //cout<<"First erase"<<endl;
               break;
             }
           }
@@ -200,7 +195,6 @@ class Graph {
           for (auto it = vertices.at(i).edgelist.begin(); it != vertices.at(i).edgelist.end(); it++) {
             if (it -> getDestinationVertexID() == fromVertex) {
               vertices.at(i).edgelist.erase(it);
-              //cout<<"second erase"<<endl;
               break;
             }
           }
