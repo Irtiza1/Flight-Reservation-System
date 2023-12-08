@@ -1,7 +1,12 @@
-#include<iostream>
-#include<list>
-#include<vector>
-#include<iterator>
+#include <iostream>
+#include <list>
+#include <vector>
+#include <iterator>
+#include <stack>
+#include <queue>
+#include <climits>
+#include <set>
+#include <algorithm>
 using namespace std;
 #ifndef FLIGHT_H
 #define FLIGHT_H
@@ -76,7 +81,14 @@ class Vertex{
 
 class Graph {
   vector < Vertex > vertices;
+  // private:
+  vector<int> predecessor;
+
   public:
+  Graph() {
+        predecessor.resize(vertices.size(), -1); // Resize to match the number of vertices
+    // predecessor.assign(vertices.size(), -1);
+  }
     bool checkIfVertexExistByID(int vid) {
       bool flag = false;
       for (int i = 0; i < vertices.size(); i++) {
@@ -142,9 +154,13 @@ class Graph {
         for (int i = 0; i < vertices.size(); i++) {
           if (vertices.at(i).getStateID() == fromVertex) {
             Edge e(toVertex, weight);
+            //edgelist.push_back(e); 
+            //vertices.at(i).addEdgeToedgelist(toVertex,weight);
             vertices.at(i).edgelist.push_back(e);
           } else if (vertices.at(i).getStateID() == toVertex) {
-            Edge e(toVertex, weight);
+            Edge e(fromVertex, weight);
+            //edgelist.push_back(e); 
+            //vertices.at(i).addEdgeToedgelist(fromVertex,weight);
             vertices.at(i).edgelist.push_back(e);
           }
         }
@@ -157,10 +173,12 @@ class Graph {
   void updateEdgeByID(int fromVertex, int toVertex, int newWeight) {
     bool check = checkIfEdgeExistByID(fromVertex, toVertex);
     if (check == true) {
+    cout << "Updating edge from " << fromVertex << " to " << toVertex << " with weight " << newWeight << endl;
       for (int i = 0; i < vertices.size(); i++) {
         if (vertices.at(i).getStateID() == fromVertex) {
           for (auto it = vertices.at(i).edgelist.begin(); it != vertices.at(i).edgelist.end(); it++) {
             if (it -> getDestinationVertexID() == toVertex) {
+              cout << "Edge Weight Updated Successfully " << endl;
               it -> setWeight(newWeight);
               break;
             }
@@ -168,6 +186,7 @@ class Graph {
         } else if (vertices.at(i).getStateID() == toVertex) {
           for (auto it = vertices.at(i).edgelist.begin(); it != vertices.at(i).edgelist.end(); it++) {
             if (it -> getDestinationVertexID() == fromVertex) {
+              cout << "Edge Weight Updated Successfully " << endl;
               it -> setWeight(newWeight);
               break;
             }
@@ -187,6 +206,7 @@ class Graph {
           for (auto it = vertices.at(i).edgelist.begin(); it != vertices.at(i).edgelist.end(); it++) {
             if (it -> getDestinationVertexID() == toVertex) {
               vertices.at(i).edgelist.erase(it);
+              //cout<<"First erase"<<endl;
               break;
             }
           }
@@ -195,6 +215,7 @@ class Graph {
           for (auto it = vertices.at(i).edgelist.begin(); it != vertices.at(i).edgelist.end(); it++) {
             if (it -> getDestinationVertexID() == fromVertex) {
               vertices.at(i).edgelist.erase(it);
+              //cout<<"second erase"<<endl;
               break;
             }
           }
@@ -241,13 +262,104 @@ class Graph {
       temp.printedgelist();
     }
   }
+  Vertex get(int Vid){
+    Vertex temp;
+    for (int i = 0; i < vertices.size(); i++) {
+        if (vertices.at(i).getStateID() == Vid) {
+          temp=vertices.at(i);
+        }
+      }
+      return temp;
+  }
+  void BFSPrint(int Vid) {
+    if (checkIfVertexExistByID(Vid)) {
+        Vertex temp = get(Vid);
+        vector<bool> visited(vertices.size(), false);
+        queue<int> q;
+        q.push(temp.getStateID());
+        visited[Vid] = true;
+        while (!q.empty()) {
+            Vid = q.front();
+            cout << Vid << " ";
+            q.pop();
+
+            for (auto adj : temp.getedgelist()) {
+                int adjID = adj.getDestinationVertexID();
+                if (!visited[adjID]) {
+                    q.push(adjID);
+                    visited[adjID] = true;
+                }
+            }
+        }
+        cout << endl;
+    }
+}
+
+   // Dijkstra's Algorithm
+    vector<int> dijkstra(int source, int destination) {
+        vector<int> dist(vertices.size(), INT_MAX);
+        dist[source] = 0;
+        predecessor.resize(vertices.size(), -1);
+        set<pair<int, int>> pq;
+        pq.insert({0, source});
+
+        while (!pq.empty()) {
+            int u = pq.begin()->second;
+            pq.erase(pq.begin());
+
+            for (const Edge& e : vertices[u].edgelist) {
+                int v = e.DestinationVertexID;
+                int weight = e.weight;
+                // Update distance if a shorter path is found
+                if (dist[v] > dist[u] + weight) {
+                    pq.erase({dist[v], v});
+                    dist[v] = dist[u] + weight;
+                    pq.insert({dist[v], v});
+                    predecessor[v]=u;
+                }
+            }
+
+            // If the destination is reached, break out of the loop
+            if (u == destination) {
+                break;
+            }
+        }
+
+        return dist;
+    }
+
+    void printShortestPath(int source, int destination) {
+        if (predecessor[destination] == -1) {
+            cout << "No path exists from " << source << " to " << destination << endl;
+            return;
+        }
+
+        vector<int> path;
+        for (int v = destination; v != source; v = predecessor[v]) {
+            path.push_back(v);
+        }
+        path.push_back(source);
+
+        reverse(path.begin(), path.end());
+
+        for (int i = 0; i < path.size(); ++i) {
+            cout << path[i];
+            if (i < path.size() - 1) {
+                cout << " -> ";
+            }
+        }
+    }
+   
+
 };
-/*int main() {
+int main() {
   Graph g;
-  string sname;
-  int id1, id2, w;
-  int option;
-  bool check;
+    string sname;
+    vector<int> distances;
+    int id1, id2, w, source, destination;
+    int option;
+    bool check;
+    vector<int> shortestDistances ;
   do {
     cout << "What operation do you want to perform? " <<
       " Select Option number. Enter 0 to exit." << endl;
@@ -261,6 +373,8 @@ class Graph {
     cout << "8. Print All Neigbors of a Vertex" << endl;
     cout << "9. Print Graph" << endl;
     cout << "10. Clear Screen" << endl;
+    cout << "11. BFS" << endl;
+    cout << "12. Shortest Path" << endl;
     cout << "0. Exit Program" << endl;
     cin >> option;
     Vertex v1;
@@ -342,11 +456,31 @@ class Graph {
       cout << "Print Graph Operation -" << endl;
       g.printGraph();
       break;
+    case 11:
+      cout << "BFS Print" << endl;
+      g.BFSPrint(1);
+      break;
+    case 12:
+        cout << "Dijkstra's Algorithm" << endl;
+        cout << "Enter source vertex: ";
+        cin >> source;
+        cout << "Enter destination vertex: ";
+        cin >> destination;
+
+        shortestDistances = g.dijkstra(source, destination);
+
+        // Print the shortest distance to the destination vertex
+        cout << "Shortest Distance from " << source << " to " << destination << ": " << shortestDistances[destination] << endl;
+
+        // Print the shortest path
+        g.printShortestPath(source, destination);
+        break;
+
     default:
       cout << "Enter Proper Option number " << endl;
     }
     cout << endl;
   } while (option != 0);
   return 0;
-}*/
+}
 #endif
