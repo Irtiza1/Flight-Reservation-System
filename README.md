@@ -1,4 +1,6 @@
 # Flight Reservation System Using Dijktra’s Algorithm
+![flight](https://github.com/user-attachments/assets/aac9b4ec-56d8-45bb-b454-9e27a320864f)
+
 **Introduction:**
 
 With the increasing prevalence of air travel, it is essential to prioritize the convenience of air journeys. This entails time, cost, comfort, layovers, and customer service. A significant portion of an air traveler's experience is influenced by time and cost. Travelers typically prefer the shortest and most cost-effective routes to their destinations. To address this challenge, we are developing a console-based application aimed at providing customers with the most efficient routes to their destinations, optimizing both time and cost.
